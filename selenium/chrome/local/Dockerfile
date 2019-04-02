@@ -45,11 +45,14 @@ RUN \
          lsb-base \
          xdg-utils \
          libcurl3 \
+         libappindicator3-1 \
          curl && \
          curl -O http://apt-repo:8080/google-chrome-stable.deb && \
          apt-get -y purge curl && \
          dpkg -i google-chrome-stable.deb && \
          rm google-chrome-stable.deb && \
+         ln -s /opt/google/chrome-beta /opt/google/chrome && \
+         ln -s /usr/bin/google-chrome-beta /usr/bin/google-chrome-stable && \
          chown root:root /opt/google/chrome/chrome-sandbox && \
          chmod 4755 /opt/google/chrome/chrome-sandbox && \
          google-chrome-stable --version && \
