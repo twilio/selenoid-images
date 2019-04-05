@@ -94,7 +94,10 @@ if [ -f "entrypoint.sh" ]; then
     cp entrypoint.sh "$dir_name/entrypoint.sh"
 fi
 pushd "$dir_name"
-docker build -t "$tag" .
+if [ "$mode" == "chromedriver" ]; then
+    version=$(echo $version | awk -F '-' '{print $1}')
+fi
+docker build --label "browser_version=$version" --label "driver_version=$3" -t "$tag" .
 popd
 rm -Rf "$dir_name"
 exit 0
