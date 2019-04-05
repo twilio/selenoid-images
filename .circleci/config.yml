@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  build:
+    machine:
+      docker_layer_caching: false
+      image: circleci/classic:201708-01
+    environment:
+      BROWSER_NAME: chrome
+      BROWSER_CHANNEL: beta
+      TESTS_BRANCH: develop
+    steps:
+      - checkout
+      - run:
+          name: Build image
+          command: cd selenium && echo n | ./build_image.sh ${BROWSER_NAME} ${BROWSER_CHANNEL}
+      - run:
+          name: Show image info
+          command: |
+            echo "Browser: ${BROWSER_NAME}"
+            echo "Channel: ${BROWSER_CHANNEL}"
+            docker inspect selenoid/${BROWSER_NAME}:${BROWSER_CHANNEL} | jq -r '.[0].Config.Labels'
+      - run:
+          name: Checkout tests
+          command: cd .. && git clone -b ${TESTS_BRANCH} --single-branch git@github.com:twilio/selenoid-container-tests.git
+      - run:
+          name: Test image
+          command: cd ../selenoid-container-tests && mvn clean test -Dgrid.connection.url="http://localhost:4445/" -Dgrid.browser.name=${BROWSER_NAME} -Dgrid.browser.version=${BROWSER_CHANNEL}
