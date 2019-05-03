@@ -56,8 +56,9 @@ Here `70.0.3538.67-1` is `google-chrome-stable` package version for Ubuntu 16.04
 
 * To build a Chrome image for the current Chrome version and its most compatible Chromedriver, of a particular channel use the following command:
 ```
-$ ./build_image.sh chrome {stable|beta|dev}
-```  
+$ ./build_image.sh chrome {stable|beta|dev} {true|false}
+```
+Here `chrome` is the browser name, `{stable|beta|dev}` is the browser channel, `[{true|false}]` whether to publish or not the image.    
 
 * Occasionally Google’s GNU Privacy Guard (GPG) key used to sign Chrome Linux package may be expired. Then you can set:
 ```

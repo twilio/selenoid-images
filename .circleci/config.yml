@@ -1,27 +1,66 @@
-version: 2
+version: 2.1
+commands:
+  checkout-test:
+    steps:
+      - run:
+          name: Checkout tests
+          command: cd .. && git clone -b ${TESTS_BRANCH} --single-branch git@github.com:twilio/selenoid-container-tests.git
+  docker-login:
+    steps:
+      - run:
+          name: Docker login
+          command: echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+  build-test-publish-image:
+    parameters:
+      publish:
+        type: boolean
+    steps:
+      - run:
+          name: Build image
+          command: cd selenium && ./build_image.sh ${BROWSER_NAME} ${BROWSER_CHANNEL} "<< parameters.publish >>"
+  show-image-info:
+    steps:
+      - run:
+          name: Show image info
+          command: |
+            echo "Browser: ${BROWSER_NAME} "
+            echo "Channel: ${BROWSER_CHANNEL}"
+            docker inspect selenoid/${BROWSER_NAME}:${BROWSER_CHANNEL} | jq -r '.[0].Config.Labels'
 jobs:
   build:
     machine:
       docker_layer_caching: false
-      image: circleci/classic:201708-01
+      image: circleci/classic:201711-01
     environment:
       BROWSER_NAME: chrome
       BROWSER_CHANNEL: beta
       TESTS_BRANCH: develop
+    parameters:
+      publish:
+        default: false
+        type: boolean
     steps:
       - checkout
-      - run:
-          name: Build image
-          command: cd selenium && echo n | ./build_image.sh ${BROWSER_NAME} ${BROWSER_CHANNEL}
-      - run:
-          name: Show image info
-          command: |
-            echo "Browser: ${BROWSER_NAME}"
-            echo "Channel: ${BROWSER_CHANNEL}"
-            docker inspect selenoid/${BROWSER_NAME}:${BROWSER_CHANNEL} | jq -r '.[0].Config.Labels'
-      - run:
-          name: Checkout tests
-          command: cd .. && git clone -b ${TESTS_BRANCH} --single-branch git@github.com:twilio/selenoid-container-tests.git
-      - run:
-          name: Test image
-          command: cd ../selenoid-container-tests && mvn clean test -Dgrid.connection.url="http://localhost:4445/" -Dgrid.browser.name=${BROWSER_NAME} -Dgrid.browser.version=${BROWSER_CHANNEL}
+      - checkout-test
+      - when:
+          condition: << parameters.publish >>
+          steps:
+            - docker-login
+      - build-test-publish-image:
+          publish: << parameters.publish >>
+      - show-image-info
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          publish: false
+  manual-build-n-publish:
+    jobs:
+      - hold:
+          type: approval
+      - build:
+          publish: true
+          requires:
+            - hold
+

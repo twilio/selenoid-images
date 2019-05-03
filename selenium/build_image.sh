@@ -2,15 +2,19 @@
 set -e
 browser_name=$1
 browser_channel=$2
+publish=${3:-"false"}
 
 if [ -z "$browser_name" -o -z "$browser_channel" ]; then
-    echo 'Usage: ./build_image.sh <browser_name> <browser_channel>'
+    echo 'Usage: ./build_image.sh <browser_name> <browser_channel> [<publish>]'
     exit 1
 elif [ "$browser_name" != "chrome" ]; then
-    echo 'Usage: ./build_image.sh chrome <browser_channel>'
+    echo 'Usage: ./build_image.sh chrome <browser_channel> [<publish>]'
     exit 1
 elif [ "$browser_channel" != "stable" -a "$browser_channel" != "beta" -a "$browser_channel" != "dev" ]; then
-    echo 'Usage: ./build_image.sh <browser_name> {stable|beta|dev}'
+    echo 'Usage: ./build_image.sh <browser_name> {stable|beta|dev} [<publish>]'
+    exit 1
+elif [ "$publish" != "true" -a "$publish" != "false" ]; then
+    echo 'Usage: ./build_image.sh <browser_name> <browser_channel> [{true|false}]'
     exit 1
 fi
 set -x
@@ -34,11 +38,19 @@ get_chromedriver_version(){
     fi
 }
 
+publish_image(){
+    if [ "$3" == "true" ] ; then
+        docker tag selenoid/$1:$2 twilio/selenoid:$1_$2
+        docker push twilio/selenoid:$1_$2
+    fi
+}
+
 case $browser_name in
         chrome)
             browser_version=$(get_chrome_version $browser_channel)
             driver_version=$(get_chromedriver_version $browser_version $browser_channel)
-            ./automate_chrome.sh $browser_version-1 $driver_version $browser_channel
+            echo "n" | ./automate_chrome.sh $browser_version-1 $driver_version $browser_channel
+            publish_image $browser_name $browser_channel $publish
             ;;
 esac
 
