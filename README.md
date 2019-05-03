@@ -43,8 +43,26 @@ Here `63.0+build2-0ubuntu0.16.04.2` is `firefox` package version for Ubuntu 16.0
 * To build a Chrome image use the following command:
 ```
 $ ./automate_chrome.sh 70.0.3538.67-1 2.43 70.0
+$ ./automate_chrome.sh 70.0.3538.67-1 2.43 stable
+$ ./automate_chrome.sh 74.0.3729.40-1 2.43 beta
+$ ./automate_chrome.sh 75.0.3745.4-1 2.43 dev
+$ ./automate_chrome.sh google-chrome-stable_70.0.3538.67-1_amd64.deb 2.43 70.0
+$ ./automate_chrome.sh google-chrome-stable_70.0.3538.67-1_amd64.deb 2.43 stable
+$ ./automate_chrome.sh google-chrome-beta_74.0.3729.40-1_amd64.deb 2.43 beta
+$ ./automate_chrome.sh google-chrome-unstable_75.0.3745.4-1_amd64.deb 2.43 dev
 ```
 Here `70.0.3538.67-1` is `google-chrome-stable` package version for Ubuntu 16.04, `2.43` is [Chromedriver](https://chromedriver.storage.googleapis.com/index.html) version, `70.0` is Docker tag to be applied.  
+`Note` that if Chrome is from a different channel to `stable`, Docker tag must be `{beta|dev}`
+
+* To build a Chrome image for the current Chrome version and its most compatible Chromedriver, of a particular channel use the following command:
+```
+$ ./build_image.sh chrome {stable|beta|dev}
+```  
+
+* Occasionally Google’s GNU Privacy Guard (GPG) key used to sign Chrome Linux package may be expired. Then you can set:
+```
+$ IGNORE_GPG_KEY=true ./build_image.sh chrome stable
+``` 
 
 * To build an Opera image use the following command:
 ```

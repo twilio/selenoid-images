@@ -19,9 +19,15 @@ if [ -f "$input" ]; then
     method="chrome/local"
 fi
 
-./build-dev.sh $method $browser_version true
+if [ "$tag" == "beta" -o "$tag" == "dev" ]; then
+    method_channel="$method/$tag"
+else
+    method_channel="$method/stable"
+fi
+
+./build-dev.sh $method_channel $browser_version true
 if [ "$method" == "chrome/apt" ]; then
-    ./build-dev.sh $method $browser_version false
+    ./build-dev.sh $method_channel $browser_version false
 fi
 pushd chrome
 ../build.sh chromedriver $browser_version $driver_version selenoid/chrome:$tag
