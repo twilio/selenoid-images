@@ -4,28 +4,34 @@ commands:
     steps:
       - run:
           name: Checkout tests
-          command: cd .. && git clone -b ${TESTS_BRANCH} --single-branch git@github.com:twilio/selenoid-container-tests.git
+          command: git clone -b ${TESTS_BRANCH} --single-branch git@github.com:twilio/selenoid-container-tests.git ../selenoid-container-tests
   docker-login:
     steps:
       - run:
           name: Docker login
           command: echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
-  build-test-publish-image:
-    parameters:
-      publish:
-        type: boolean
+  docker-logout:
     steps:
       - run:
-          name: Build image
-          command: cd selenium && ./build_image.sh ${BROWSER_NAME} ${BROWSER_CHANNEL} "<< parameters.publish >>"
+          name: Docker logout
+          command: docker logout
+  build-test-image:
+    steps:
+      - run:
+          name: Build & test image
+          command: cd selenium && ./build_image.sh ${BROWSER_NAME} ${BROWSER_CHANNEL} false
+  build-test-publish-image:
+    steps:
+      - run:
+          name: Build & test & publish image
+          command: cd selenium && ./build_image.sh ${BROWSER_NAME} ${BROWSER_CHANNEL} true
   show-image-info:
     steps:
       - run:
           name: Show image info
           command: |
-            echo "Browser: ${BROWSER_NAME} "
-            echo "Channel: ${BROWSER_CHANNEL}"
-            docker inspect selenoid/${BROWSER_NAME}:${BROWSER_CHANNEL} | jq -r '.[0].Config.Labels'
+            echo "Browser: ${BROWSER_NAME} ${BROWSER_CHANNEL} $(docker inspect selenoid/${BROWSER_NAME}:${BROWSER_CHANNEL} | jq -r '.[0].Config.Labels.browser_version')"
+            echo "Driver: $(docker inspect selenoid/${BROWSER_NAME}:${BROWSER_CHANNEL} | jq -r '.[0].Config.Labels.driver_version')"
 jobs:
   build:
     machine:
@@ -46,8 +52,12 @@ jobs:
           condition: << parameters.publish >>
           steps:
             - docker-login
-      - build-test-publish-image:
-          publish: << parameters.publish >>
+            - build-test-publish-image
+            - docker-logout
+      - unless:
+          condition: << parameters.publish >>
+          steps:
+            - build-test-image
       - show-image-info
 workflows:
   version: 2
