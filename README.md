@@ -43,8 +43,14 @@ Here `63.0+build2-0ubuntu0.16.04.2` is `firefox` package version for Ubuntu 16.0
 * To build a Chrome image use the following command:
 ```
 $ ./automate_chrome.sh 70.0.3538.67-1 2.43 70.0
+$ ./automate_chrome.sh google-chrome-stable_70.0.3538.67-1_amd64.deb 2.43 70.0
 ```
 Here `70.0.3538.67-1` is `google-chrome-stable` package version for Ubuntu 16.04, `2.43` is [Chromedriver](https://chromedriver.storage.googleapis.com/index.html) version, `70.0` is Docker tag to be applied.  
+`Note` If Chrome is from `beta` or `dev` channel, Docker tag must be the channel name
+```
+$ ./automate_chrome.sh 70.0.3538.67-1 2.43 beta
+$ ./automate_chrome.sh google-chrome-beta_70.0.3538.67-1_amd64.deb 2.43 beta
+```
 
 * To build an Opera image use the following command:
 ```
