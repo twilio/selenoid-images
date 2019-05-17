@@ -1,0 +1,11 @@
+version: 2
+jobs:
+  build:
+    machine:
+      docker_layer_caching: false
+      image: circleci/classic:201708-01
+    steps:
+      - checkout
+      - run:
+          name: Hello World
+          command: echo "Hello World"
