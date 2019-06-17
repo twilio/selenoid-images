@@ -2,7 +2,7 @@
 set -e
 
 if [ -z "$1" -o -z "$2" ]; then
-    echo 'Usage: build-dev.sh {firefox/apt|firefox/local|chrome/apt/{stable|beta|dev}|chrome/local/{stable|beta|dev}|opera/presto|opera/blink/local|opera/blink/apt} <browser_version> [<cleanup={true|false}>] [<requires_java={true|false}>]'
+    echo 'Usage: build-dev.sh {firefox/apt/{stable|beta|dev}|firefox/local/{stable|beta|dev}|chrome/apt/{stable|beta|dev}|chrome/local/{stable|beta|dev}|opera/presto|opera/blink/local|opera/blink/apt} <browser_version> [<cleanup={true|false}>] [<requires_java={true|false}>] [<tag_version>] '
     exit 1
 fi
 set -x
@@ -15,13 +15,8 @@ tag_version="$version"
 if [ -n "$5" ]; then
     tag_version=$5
 fi
-if [ $(uname) == "Darwin" ]; then
-    browser_name=$(echo "$browser" | sed -e 's/\/.*//g')
-else
-    browser_name=$(echo "$browser" | sed -e 's/\(\/..*\)\+//g')
-fi
-browser_name=$(echo "$browser" | sed -e 's/\/.*//g')
-if [ "$browser_name" == "chrome" ]; then
+browser_name="${browser%%/*}"
+if [ "$browser_name" == "chrome" -o "$browser_name" == "firefox" ]; then
     channel=$(echo "$browser" | sed -e 's/.*\///g')
     browser=$(echo "$browser" | sed -e "s/\/$channel//g")
 fi
@@ -58,24 +53,41 @@ if [ "$browser" == "chrome/local" -o "$browser" == "opera/blink/local" -o "$brow
     fi
     additional_docker_args="--add-host apt-repo:$host_ip"
 fi
-if [ "$browser_name" == "chrome" ]; then
-    if [ ${IGNORE_GPG_KEY:-"false"} == "true" ]; then
-         additional_docker_args+=" --build-arg ADDITIONAL_APT_INSTALL_OPTS=--allow-unauthenticated"
-    fi
-    case $channel in
-            stable)
-                additional_docker_args+=" --build-arg CHANNEL_ALIAS=stable --build-arg SANDBOX_PATH=chrome"
-                ;;
+case $browser_name in
+        chrome)
+            if [ ${IGNORE_GPG_KEY:-"false"} == "true" ]; then
+                 additional_docker_args+=" --build-arg ADDITIONAL_APT_INSTALL_OPTS=--allow-unauthenticated"
+            fi
+            case $channel in
+                    stable)
+                        additional_docker_args+=" --build-arg CHANNEL_ALIAS=stable --build-arg SANDBOX_PATH=chrome"
+                        ;;
 
-            dev)
-                additional_docker_args+=" --build-arg CHANNEL_ALIAS=unstable --build-arg SANDBOX_PATH=chrome-unstable"
-                ;;
+                    dev)
+                        additional_docker_args+=" --build-arg CHANNEL_ALIAS=unstable --build-arg SANDBOX_PATH=chrome-unstable"
+                        ;;
 
-            beta)
-                additional_docker_args+=" --build-arg CHANNEL_ALIAS=beta --build-arg SANDBOX_PATH=chrome-beta"
-                ;;
-    esac
-fi
+                    beta)
+                        additional_docker_args+=" --build-arg CHANNEL_ALIAS=beta --build-arg SANDBOX_PATH=chrome-beta"
+                        ;;
+            esac
+            ;;
+        firefox)
+            case $channel in
+                    stable)
+                        additional_docker_args+=" --build-arg APT_REPO=ppa:ubuntu-mozilla-security/ppa --build-arg PACKAGE=firefox"
+                        ;;
+
+                    dev)
+                        additional_docker_args+=" --build-arg APT_REPO=ppa:ubuntu-mozilla-daily/ppa --build-arg PACKAGE=firefox-trunk"
+                        ;;
+
+                    beta)
+                        additional_docker_args+=" --build-arg APT_REPO=ppa:mozillateam/firefox-next --build-arg PACKAGE=firefox"
+                        ;;
+            esac
+            ;;
+esac
 pushd "$dir_name"
 echo "Creating image $tag with cleanup=$cleanup..."
 docker build $additional_docker_args --build-arg VERSION="$version" --build-arg CLEANUP="$cleanup" -t "$tag" .
