@@ -16,7 +16,10 @@ if [ -f "$input" ]; then
     cp "$input" chrome/local/google-chrome-stable.deb
     filename=$(echo "$input" | awk -F '/' '{print $NF}')
     browser_version=$(echo $filename | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
+    browser_release_version=$browser_version
     method="chrome/local"
+else
+    browser_release_version=$(echo $browser_version | awk -F '-' '{print $1}')
 fi
 
 if [ "$tag" == "beta" -o "$tag" == "dev" ]; then
@@ -25,12 +28,18 @@ else
     method_channel="$method/stable"
 fi
 
-./build-dev.sh $method_channel $browser_version true
+if [ "$tag" == "stable" -o "$tag" == "beta" -o "$tag" == "dev" ]; then
+    dev_tag=$browser_release_version
+else
+    dev_tag=$browser_version
+fi
+
+./build-dev.sh $method_channel $browser_version true false $dev_tag
 if [ "$method" == "chrome/apt" ]; then
-    ./build-dev.sh $method_channel $browser_version false
+    ./build-dev.sh $method_channel $browser_version false false $dev_tag
 fi
 pushd chrome
-../build.sh chromedriver $browser_version $driver_version selenoid/chrome:$tag
+../build.sh chromedriver $dev_tag $driver_version selenoid/chrome:$tag
 popd
 
 test_image(){
@@ -52,9 +61,9 @@ docker tag "selenoid/chrome:$tag" "selenoid/vnc:chrome_$tag"
 
 read -p "Push?" yn
 if [ "$yn" == "y" ]; then
-	docker push "selenoid/dev_chrome:"$browser_version
+	docker push "selenoid/dev_chrome:"$dev_tag
 	if [ "$method" == "chrome/apt" ]; then
-    	docker push "selenoid/dev_chrome_full:"$browser_version
+    	docker push "selenoid/dev_chrome_full:"$dev_tag
     fi
 	docker push "selenoid/chrome:$tag"
     docker tag "selenoid/chrome:$tag" "selenoid/chrome:latest"

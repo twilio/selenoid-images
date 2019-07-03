@@ -72,13 +72,16 @@ mkdir -p "$dir_name"
 pushd "$dir_name"
 template_file="Dockerfile.driver.tmpl"
 if [ "$mode" == "chromedriver" ]; then
-    download_chromedriver "$3"
+    driver_version=$3
+    download_chromedriver "$driver_version"
 elif [ "$mode" == "operadriver" ]; then
     download_operadriver "$3"
 elif [ "$mode" == "selenoid" ]; then
+    driver_version=$5
     download_selenoid "$3"
-    download_geckodriver "$5"
+    download_geckodriver "$driver_version"
 elif [ "$mode" == "selenium" ]; then
+    driver_version=$5
     download_selenium "$3"
     template_file="Dockerfile.server.tmpl"
 else
@@ -94,10 +97,7 @@ if [ -f "entrypoint.sh" ]; then
     cp entrypoint.sh "$dir_name/entrypoint.sh"
 fi
 pushd "$dir_name"
-if [ "$mode" == "chromedriver" ]; then
-    version=$(echo $version | awk -F '-' '{print $1}')
-fi
-docker build --label "browser_version=$version" --label "driver_version=$3" -t "$tag" .
+docker build --label "browser_version=$version" --label "driver_version=$driver_version" -t "$tag" .
 popd
 rm -Rf "$dir_name"
 exit 0
