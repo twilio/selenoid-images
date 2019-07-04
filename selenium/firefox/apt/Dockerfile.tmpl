@@ -14,6 +14,5 @@ RUN  \
         add-apt-repository -y $APT_REPO && \
         apt-get update && \
         apt-get -y --no-install-recommends install $PACKAGE=$VERSION && \
-        rm /usr/bin/firefox || true && \
-        ln -s /usr/lib/$PACKAGE/$PACKAGE /usr/bin/firefox && \
+        ( [ "$PACKAGE" = "firefox-trunk" ] && ln -s /usr/lib/$PACKAGE/$PACKAGE /usr/bin/firefox ) || true && \
         ($CLEANUP && rm -Rf /tmp/* && rm -Rf /var/lib/apt/lists/*) || true
