@@ -8,7 +8,7 @@ ARG PACKAGE
 RUN  \
         ( [ "$CLEANUP" != "true" ] && rm -f /etc/apt/apt.conf.d/docker-clean ) || true && \
         apt-get update && \
-        # This is needed as the current Ubuntu version lacks add-apt-repository
+        # Install add-apt-repository
         apt-get install -y software-properties-common && \
         apt-get update && \
         add-apt-repository -y $APT_REPO && \
