@@ -39,18 +39,40 @@ selenoid-container-tests/ # <== optional tests repo
 $ ./automate_firefox.sh 63.0+build2-0ubuntu0.16.04.2 1.8.1 63.0 0.23.0
 ```
 Here `63.0+build2-0ubuntu0.16.04.2` is `firefox` package version for Ubuntu 16.04, `1.8.1` is [Selenoid](https://github.com/aerokube/selenoid/releases) version to use inside image (just use latest release version here), `63.0` is Docker tag to be applied, `0.23.0` is [Geckodriver](http://github.com/mozilla/geckodriver/releases) version to use.
+If Firefox is from `beta` or `dev` channel, Docker tag must be the channel name
+```
+$ ./automate_firefox.sh 68.0~b12+build1-0ubuntu0.16.04.1 1.8.1 beta 0.23.0
+```
 
 If you wish to pack a local Debian package instead of APT - just replace package version with full path to **deb** file:
 ```
 $ ./automate_firefox.sh /path/to/firefox_63.0+build2-0ubuntu0.16.04.2.deb 1.8.1 63.0 0.23.0
 ``` 
 It is important to use package files with full version specified name because automation scripts determine browser version by parsing package file name!
+If Firefox is from `beta` or `dev` channel, Docker tag must be the channel name
+```
+$ ./automate_firefox.sh /path/to/firefox_68.0~b12+build1-0ubuntu0.16.04.1.deb 1.8.1 beta 0.23.0
+```
 
 * To build a Chrome image use the following command:
 ```
 $ ./automate_chrome.sh 70.0.3538.67-1 2.43 70.0
 ```
 Here `70.0.3538.67-1` is `google-chrome-stable` package version for Ubuntu 16.04, `2.43` is [Chromedriver](https://chromedriver.storage.googleapis.com/index.html) version, `70.0` is Docker tag to be applied.  
+If Chrome is from `beta` or `dev` channel, Docker tag must be the channel name
+```
+$ ./automate_chrome.sh 70.0.3538.67-1 2.43 beta
+```
+
+If you wish to pack a local Debian package instead of APT - just replace package version with full path to **deb** file:
+```
+$ ./automate_chrome.sh /path/to/google-chrome-stable_70.0.3538.67-1_amd64.deb 2.43 70.0
+``` 
+It is important to use package files with full version specified name because automation scripts determine browser version by parsing package file name!
+If Chrome is from `beta` or `dev` channel, Docker tag must be the channel name
+```
+$ ./automate_chrome.sh /path/to/google-chrome-beta_70.0.3538.67-1_amd64.deb 2.43 beta
+```
 
 * To build an Opera image use the following command:
 ```
