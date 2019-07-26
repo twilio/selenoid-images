@@ -1,5 +1,7 @@
 #!/bin/bash
 set -e
+script_path="$( cd "$(dirname "$0")" ; pwd -P )"
+source $script_path/common.sh
 
 download_selenium() {
     selenium_version=$1
@@ -89,18 +91,30 @@ else
     exit 1
 fi
 popd
-cat "$template_file" | sed -e "s|@@VERSION@@|$version|g" > "$dir_name/Dockerfile"
+additional_docker_args=""
+selenoid_tag_version=$(echo "$tag" | sed -e 's/.*\://g')
+if [ "$selenoid_tag_version" == "stable" -o "$selenoid_tag_version" == "beta" -o "$selenoid_tag_version" == "dev" ]; then
+    selenoid_tag_browser=$(echo "$tag" | sed -e 's/.*\///g' | sed -e 's/\:.*//g')
+    browser_package_version=$version
+    browser_version=$(get_browser_version $selenoid_tag_browser $browser_package_version)
+    dev_tag=$selenoid_tag_version
+    additional_docker_args="--label browser_package_version=$browser_package_version --label browser_version=$browser_version --label driver_version=$driver_version"
+else
+    browser_version=$version
+    dev_tag=$version
+fi
+cat "$template_file" | sed -e "s|@@VERSION@@|$dev_tag|g" > "$dir_name/Dockerfile"
 if [ "$mode" == "chromedriver" ]; then
     cp -R devtools "$dir_name/devtools"
 fi
 if [ -f "browsers.json.tmpl" ]; then
-    cat browsers.json.tmpl | sed -e "s|@@VERSION@@|$version|g" > "$dir_name/browsers.json"
+    cat browsers.json.tmpl | sed -e "s|@@VERSION@@|$browser_version|g" > "$dir_name/browsers.json"
 fi
 if [ -f "entrypoint.sh" ]; then
     cp entrypoint.sh "$dir_name/entrypoint.sh"
 fi
 pushd "$dir_name"
-docker build --label "browser_version=$version" --label "driver_version=$driver_version" -t "$tag" .
+docker build $additional_docker_args -t "$tag" .
 popd
 rm -Rf "$dir_name"
 exit 0

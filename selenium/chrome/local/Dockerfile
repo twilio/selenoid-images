@@ -4,7 +4,7 @@ ARG VERSION=noop
 ARG CLEANUP=noop
 ARG ADDITIONAL_APT_INSTALL_OPTS=noop
 ARG CHANNEL_ALIAS
-ARG SANDBOX_PATH
+ARG CHANNEL_PATH
 
 RUN \
         apt-get update && \
@@ -54,8 +54,8 @@ RUN \
          apt-get -y purge curl && \
          dpkg -i google-chrome-stable.deb && \
          rm google-chrome-stable.deb && \
-         chown root:root /opt/google/$SANDBOX_PATH/chrome-sandbox && \
-         chmod 4755 /opt/google/$SANDBOX_PATH/chrome-sandbox && \
+         chown root:root /opt/google/$CHANNEL_PATH/chrome-sandbox && \
+         chmod 4755 /opt/google/$CHANNEL_PATH/chrome-sandbox && \
          google-chrome-$CHANNEL_ALIAS --version && \
          rm -Rf /tmp/* && \
          rm -Rf /var/lib/apt/lists/*

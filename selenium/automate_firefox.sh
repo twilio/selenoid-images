@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+source ./common.sh
 input=$1
 server_version=$2
 tag=$3
@@ -30,10 +31,7 @@ if [ -f "$input" ]; then
     rm -f firefox/local/firefox*.deb
     cp "$input" firefox/local/firefox_$arch.deb
     browser_version=$(echo $filename | awk -F '_' '{print $2$3}' | awk -F '+' '{print $1}' | awk -F '~hg' '{print $1}' | sed -e 's/~//g')
-    browser_release_version=$browser_version
     method="firefox/local"
-else
-    browser_release_version=$(echo $browser_version | awk -F '+' '{print $1}' | awk -F '~hg' '{print $1}' | sed -e 's/~//g')
 fi
 
 if [ "$tag" == "beta" -o "$tag" == "dev" ]; then
@@ -43,17 +41,19 @@ else
 fi
 
 if [ "$tag" == "stable" -o "$tag" == "beta" -o "$tag" == "dev" ]; then
-    dev_tag=$browser_release_version
+    version_for_build=$browser_version
+    browser_binary_version=$(get_browser_version firefox $browser_version)
 else
-    dev_tag=$tag
+    version_for_build=$tag
+    browser_binary_version=$tag
 fi
 
-./build-dev.sh $method_channel $browser_version true $requires_java $dev_tag
+./build-dev.sh $method_channel $browser_version true $requires_java $tag
 if [ "$method" == "firefox/apt" ]; then
-    ./build-dev.sh $method_channel $browser_version false $requires_java $dev_tag
+    ./build-dev.sh $method_channel $browser_version false $requires_java $tag
 fi
 pushd firefox/$runner
-../../build.sh $runner $dev_tag $server_version selenoid/firefox:$tag "$driver_version"
+../../build.sh $runner $version_for_build $server_version selenoid/firefox:$tag "$driver_version"
 popd
 
 test_image(){
@@ -69,15 +69,15 @@ test_image(){
     fi
 }
 
-test_image "selenoid/firefox:$tag" $dev_tag
+test_image "selenoid/firefox:$tag" $browser_binary_version
 docker tag "selenoid/firefox:$tag" "selenoid/vnc_firefox:$tag"
 docker tag "selenoid/firefox:$tag" "selenoid/vnc:firefox_$tag"
 
 read -p "Push?" yn
 if [ "$yn" == "y" ]; then
-	docker push "selenoid/dev_firefox:"$dev_tag
+	docker push "selenoid/dev_firefox:"$tag
 	if [ "$method" == "firefox/apt" ]; then
-	    docker push "selenoid/dev_firefox_full:"$dev_tag
+	    docker push "selenoid/dev_firefox_full:"$tag
     fi
 	docker push "selenoid/firefox:$tag"
     docker tag "selenoid/firefox:$tag" "selenoid/firefox:latest"
