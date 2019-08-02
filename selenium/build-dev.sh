@@ -60,15 +60,15 @@ case $browser_name in
             fi
             case $channel in
                     stable)
-                        additional_docker_args+=" --build-arg CHANNEL_ALIAS=stable --build-arg SANDBOX_PATH=chrome"
+                        additional_docker_args+=" --build-arg CHANNEL_ALIAS=stable --build-arg CHANNEL_PATH=chrome"
                         ;;
 
                     dev)
-                        additional_docker_args+=" --build-arg CHANNEL_ALIAS=unstable --build-arg SANDBOX_PATH=chrome-unstable"
+                        additional_docker_args+=" --build-arg CHANNEL_ALIAS=unstable --build-arg CHANNEL_PATH=chrome-unstable"
                         ;;
 
                     beta)
-                        additional_docker_args+=" --build-arg CHANNEL_ALIAS=beta --build-arg SANDBOX_PATH=chrome-beta"
+                        additional_docker_args+=" --build-arg CHANNEL_ALIAS=beta --build-arg CHANNEL_PATH=chrome-beta"
                         ;;
             esac
             ;;

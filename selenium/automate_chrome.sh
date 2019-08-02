@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+source ./common.sh
 input=$1
 driver_version=$2
 tag=$3
@@ -16,10 +17,7 @@ if [ -f "$input" ]; then
     cp "$input" chrome/local/google-chrome-stable.deb
     filename=$(echo "$input" | awk -F '/' '{print $NF}')
     browser_version=$(echo $filename | awk -F '_' '{print $2}' | awk -F '-' '{print $1}')
-    browser_release_version=$browser_version
     method="chrome/local"
-else
-    browser_release_version=$(echo $browser_version | awk -F '-' '{print $1}')
 fi
 
 if [ "$tag" == "beta" -o "$tag" == "dev" ]; then
@@ -29,22 +27,24 @@ else
 fi
 
 if [ "$tag" == "stable" -o "$tag" == "beta" -o "$tag" == "dev" ]; then
-    dev_tag=$browser_release_version
+    version_for_build=$browser_version
+    browser_binary_version=$(get_browser_version chrome $browser_version)
 else
-    dev_tag=$browser_version
+    version_for_build=$tag
+    browser_binary_version=$tag
 fi
 
-./build-dev.sh $method_channel $browser_version true false $dev_tag
+./build-dev.sh $method_channel $browser_version true false $tag
 if [ "$method" == "chrome/apt" ]; then
-    ./build-dev.sh $method_channel $browser_version false false $dev_tag
+    ./build-dev.sh $method_channel $browser_version false false $tag
 fi
 pushd chrome
-../build.sh chromedriver $dev_tag $driver_version selenoid/chrome:$tag
+../build.sh chromedriver $version_for_build $driver_version selenoid/chrome:$tag
 popd
 
 test_image(){
     docker rm -f selenium || true
-    docker run -d --name selenium -p 4445:4444 $1:$2
+    docker run -d --name selenium -p 4445:4444 $1
     tests_dir=../../selenoid-container-tests/
     if [ -d "$tests_dir" ]; then
         pushd "$tests_dir"
@@ -55,15 +55,15 @@ test_image(){
     fi
 }
 
-test_image "selenoid/chrome" $tag
+test_image "selenoid/chrome:$tag" $browser_binary_version
 docker tag "selenoid/chrome:$tag" "selenoid/vnc_chrome:$tag"
 docker tag "selenoid/chrome:$tag" "selenoid/vnc:chrome_$tag"
 
 read -p "Push?" yn
 if [ "$yn" == "y" ]; then
-	docker push "selenoid/dev_chrome:"$dev_tag
+	docker push "selenoid/dev_chrome:"$tag
 	if [ "$method" == "chrome/apt" ]; then
-    	docker push "selenoid/dev_chrome_full:"$dev_tag
+    	docker push "selenoid/dev_chrome_full:"$tag
     fi
 	docker push "selenoid/chrome:$tag"
     docker tag "selenoid/chrome:$tag" "selenoid/chrome:latest"
