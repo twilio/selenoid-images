@@ -13,6 +13,7 @@ RUN  \
         apt-get update && \
         add-apt-repository -y $APT_REPO && \
         apt-get update && \
+        apt-get -y install iproute2 && \
         apt-get -y --no-install-recommends install $PACKAGE=$VERSION && \
         ( [ "$PACKAGE" = "firefox-trunk" ] && ln -s /usr/lib/$PACKAGE/$PACKAGE /usr/bin/firefox ) || true && \
         firefox --version && \
