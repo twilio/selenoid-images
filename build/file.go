@@ -9,7 +9,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"gopkg.in/cheggaaa/pb.v1"
 	"io"
 	"io/ioutil"
 	"log"
@@ -17,6 +16,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"gopkg.in/cheggaaa/pb.v1"
 )
 
 const (
@@ -105,6 +106,7 @@ func extractFile(data []byte, filename string, outputDir string) (string, error)
 
 // Based on http://stackoverflow.com/questions/20357223/easy-way-to-unzip-file-with-golang
 func unzip(data []byte, fileName string, outputDir string) (string, error) {
+	log.Printf("unzip")
 	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 
 	// Closure to address file descriptors issue with all the deferred .Close() methods
@@ -115,7 +117,12 @@ func unzip(data []byte, fileName string, outputDir string) (string, error) {
 		}
 		defer rc.Close()
 
-		outputPath := filepath.Join(outputDir, f.Name)
+		fName := f.Name
+		if strings.Contains(f.Name, "/") {
+			fName = strings.Split(f.Name, "/")[1]
+		}
+		
+		outputPath := filepath.Join(outputDir, fName)
 
 		if f.FileInfo().IsDir() {
 			return "", fmt.Errorf("can only unzip files but %s is a directory", f.Name)
@@ -130,7 +137,11 @@ func unzip(data []byte, fileName string, outputDir string) (string, error) {
 
 	if err == nil {
 		for _, f := range zr.File {
-			if f.Name == fileName {
+			fName := f.Name
+			if strings.Contains(f.Name, "/") {
+				fName = strings.Split(f.Name, "/")[1]
+			}
+			if fName == fileName {
 				return extractAndWriteFile(f)
 			}
 		}
