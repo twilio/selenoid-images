@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"gopkg.in/cheggaaa/pb.v1"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,8 +17,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"gopkg.in/cheggaaa/pb.v1"
 )
 
 const (
