@@ -139,7 +139,7 @@ func (c *Chrome) parseChromeDriverVersion(pkgVersion string) (string, error) {
 	version := c.DriverVersion
 	if version == LatestVersion {
 		baseURL := "https://chromedriver.storage.googleapis.com/"
-		if c.BrowserChannel == "beta" || c.BrowserChannel == "stage" {
+		if c.BrowserChannel == "beta" || c.BrowserChannel == "dev" {
 			baseURL = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json"
 		}
 		v, err := c.getLatestChromeDriver(baseURL, pkgVersion)
@@ -153,11 +153,10 @@ func (c *Chrome) parseChromeDriverVersion(pkgVersion string) (string, error) {
 
 
 func (c *Chrome) downloadChromeDriver(dir string, version string) error {
-	fmt.Println("VERSION", version)
-	u := fmt.Sprintf("https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/%s/linux64/chromedriver-linux64.zip", version)
-    if version == LatestVersion {
-        u = fmt.Sprintf("http://chromedriver.storage.googleapis.com/%s/chromedriver_linux64.zip", version)
-    }
+	u := fmt.Sprintf("http://chromedriver.storage.googleapis.com/%s/chromedriver_linux64.zip", version)
+	if c.BrowserChannel == "beta" || c.BrowserChannel == "dev" {
+		u = fmt.Sprintf("https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/%s/linux64/chromedriver-linux64.zip", version)
+	}
 	_, err := downloadDriver(u, chromeDriverBinary, dir)
 	if err != nil {
 		return fmt.Errorf("download chromedriver: %v", err)
