@@ -106,7 +106,6 @@ func extractFile(data []byte, filename string, outputDir string) (string, error)
 
 // Based on http://stackoverflow.com/questions/20357223/easy-way-to-unzip-file-with-golang
 func unzip(data []byte, fileName string, outputDir string) (string, error) {
-	log.Printf("unzip")
 	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 
 	// Closure to address file descriptors issue with all the deferred .Close() methods
