@@ -115,7 +115,12 @@ func unzip(data []byte, fileName string, outputDir string) (string, error) {
 		}
 		defer rc.Close()
 
-		outputPath := filepath.Join(outputDir, f.Name)
+		fName := f.Name
+		if strings.Contains(f.Name, "/") {
+			fName = strings.Split(f.Name, "/")[1]
+		}
+		
+		outputPath := filepath.Join(outputDir, fName)
 
 		if f.FileInfo().IsDir() {
 			return "", fmt.Errorf("can only unzip files but %s is a directory", f.Name)
@@ -130,7 +135,11 @@ func unzip(data []byte, fileName string, outputDir string) (string, error) {
 
 	if err == nil {
 		for _, f := range zr.File {
-			if f.Name == fileName {
+			fName := f.Name
+			if strings.Contains(f.Name, "/") {
+				fName = strings.Split(f.Name, "/")[1]
+			}
+			if fName == fileName {
 				return extractAndWriteFile(f)
 			}
 		}
