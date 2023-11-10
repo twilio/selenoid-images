@@ -32,6 +32,8 @@ RUN \
          libnss3 \
          lsb-base \
          libcurl4 \
+         iproute2 \
+         iptables \
          curl && \
          curl -O http://host.docker.internal:8080/microsoft-edge.deb && \
          apt-get -y purge curl && \

@@ -21,6 +21,7 @@ RUN \
 	apt install -y --no-install-recommends \
 	    curl \
 	    iproute2 \
+		iptables \
 	    nodejs \
 	    openjdk-8-jdk-headless \
 	    unzip \
