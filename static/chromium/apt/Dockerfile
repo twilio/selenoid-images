@@ -9,6 +9,7 @@ RUN \
     apt-get update && \
     apt-get -y --no-install-recommends install \
       iproute2 \
+      iptables \
       libgtk-3-0 \
       ${PACKAGE}=${VERSION} \
       chromium-chromedriver=${VERSION} && \
