@@ -34,6 +34,8 @@ RUN \
          libcurl4 \
          curl && \
          curl -O http://host.docker.internal:8080/microsoft-edge.deb && \
+         iproute2 \
+		     iptables \
          apt-get -y purge curl && \
          dpkg -i microsoft-edge.deb && \
          (  \
