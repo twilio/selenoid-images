@@ -20,8 +20,8 @@ RUN \
 	curl --silent --location https://deb.nodesource.com/setup_16.x | bash - && \
 	apt install -y --no-install-recommends \
 	    curl \
-	    iproute2 \
-		iptables \
+		iproute2 \
+        iptables \
 	    nodejs \
 	    openjdk-8-jdk-headless \
 	    unzip \

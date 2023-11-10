@@ -10,7 +10,7 @@ RUN \
         curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
         echo 'deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main' > /etc/apt/sources.list.d/microsoft-edge.list && \
         apt-get update && \
-        apt-get -y --no-install-recommends install $PACKAGE=$VERSION && \
+        apt-get -y --no-install-recommends install iproute2 iptables $PACKAGE=$VERSION && \
         (  \
           sed -i -e 's@exec -a "$0" "$HERE/msedge"@& --no-sandbox --disable-gpu@' /opt/microsoft/$INSTALL_DIR/$PACKAGE || \
           sed -i -e 's@exec -a "$0" "$HERE/msedge"@& --no-sandbox --disable-gpu@' /opt/microsoft/$INSTALL_DIR/microsoft-edge \
