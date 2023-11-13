@@ -38,5 +38,13 @@ go build
 ```
 Build artifacts will be present in /dist directory.
 
+4. Publish the `images` Go binary artifacts. 
+First merge the code with `master` branch. 
+Then use `repository tags section` to manually create a new release and tag with generated release notes. 
+The release CI job will be triggered via `Github Actions` to publish the release with the build artifacts.
+
 ## Image information
-Moved to: http://aerokube.com/images/latest/#_browser_image_information
+Twilio built browsers use the images Go binary with `browser-validations` (BV) project. 
+https://github.com/twilio/browser-validations
+
+Check the latest published image tags on the public Docker registry: https://hub.docker.com/r/twilio/selenoid
