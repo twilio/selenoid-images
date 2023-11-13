@@ -104,7 +104,7 @@ func (c *Edge) channelToBuildArgs() []string {
 	case "beta":
 		return []string{"PACKAGE=microsoft-edge-beta", "INSTALL_DIR=msedge-beta"}
 	case "dev":
-		return []string{"PACKAGE=microsoft-edge-dev", "INSTALL_DIR=msedge-dev"}
+		return []string{"PACKAGE=microsoft-edge-unstable", "INSTALL_DIR=msedge-dev"}
 	default:
 		return []string{}
 	}

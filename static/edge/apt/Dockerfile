@@ -7,8 +7,10 @@ ARG INSTALL_DIR=msedge
 LABEL browser=$PACKAGE:$VERSION
 
 RUN \
-        curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-        echo 'deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main' > /etc/apt/sources.list.d/microsoft-edge.list && \
+        apt-get update && \
+        apt-get -y --no-install-recommends install software-properties-common apt-transport-https curl ca-certificates && \
+        curl -fSsL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /usr/share/keyrings/microsoft-edge.gpg > /dev/null && \
+        echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-edge.gpg] https://packages.microsoft.com/repos/edge stable main' | tee /etc/apt/sources.list.d/microsoft-edge.list && \
         apt-get update && \
         apt-get -y --no-install-recommends install iproute2 iptables $PACKAGE=$VERSION && \
         (  \

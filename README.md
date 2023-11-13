@@ -14,9 +14,29 @@ This repository contains [Docker](http://docker.com/) build files to be used for
 
 ### Android: [![Android Docker Pulls](https://img.shields.io/docker/pulls/selenoid/android.svg)](https://hub.docker.com/r/selenoid/android)
 
-## Building Images
+## Build the binary
 
-Moved to: http://aerokube.com/images/latest/#_building_images
+### MacOS
+1. Install go environment via homebrew or direct download from https://go.dev/doc/install. 
+Check with go.mod and CI scripts to align the go version.
+Setup go path:
+```
+export GOPATH=/Users/<<USER>>/go
+export PATH=$GOPATH/bin:$PATH
+```
+
+2. Install and run the packager for static Dockerfiles (required if Dockerfiles are modified):
+```
+go install github.com/markbates/pkger/cmd/pkger@latest
+go install github.com/mitchellh/gox@latest # cross compile
+go generate github.com/aerokube/images
+```
+3. Build the image builder binary:
+```
+go clean
+go build
+```
+Build artifacts will be present in /dist directory.
 
 ## Image information
 Moved to: http://aerokube.com/images/latest/#_browser_image_information
