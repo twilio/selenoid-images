@@ -48,10 +48,6 @@ RUN \
          lsb-base \
          xdg-utils \
          libcurl4 \
-         iproute2 \
-         iptables \
-         lsof \
-         python3-pip \
          curl && \
          curl -O http://host.docker.internal:8080/google-chrome.deb && \
          apt-get -y purge curl && \
@@ -63,5 +59,3 @@ RUN \
          google-chrome --version && \
          rm -Rf /tmp/* && \
          rm -Rf /var/lib/apt/lists/*
-
-RUN pip3 install --default-timeout=300 tcconfig
