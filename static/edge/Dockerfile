@@ -6,7 +6,13 @@ COPY msedgedriver /usr/bin/
 COPY entrypoint.sh /
 
 RUN chmod +x /usr/bin/msedgedriver
-USER selenium
+
+#Use root user
+USER root
+
+RUN mv /bin/uname /bin/uname.orig
+RUN printf '#!/bin/bash\n\nif [[ "$1" == "-r" ]] ;then\n echo '4.9.250'\n exit\nelse\n uname.orig "$@"\nfi' > /bin/uname
+RUN chmod 755 /bin/uname
 
 EXPOSE 4444
 ENTRYPOINT ["/entrypoint.sh"]
