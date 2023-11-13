@@ -47,8 +47,6 @@ RUN \
          lsb-base \
          xdg-utils \
          libcurl4 \
-         iproute2 \
-         iptables \
          curl \
          chromium-chromedriver && \
          curl -O http://host.docker.internal:8080/chromium-browser.deb && \

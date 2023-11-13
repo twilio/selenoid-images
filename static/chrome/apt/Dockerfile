@@ -6,13 +6,6 @@ ARG INSTALL_DIR=chrome
 
 LABEL browser=$PACKAGE:$VERSION
 
-#Use root user
-USER root
-
-RUN mv /bin/uname /bin/uname.orig
-RUN printf '#!/bin/bash\n\nif [[ "$1" == "-r" ]] ;then\n echo '4.9.250'\n exit\nelse\n uname.orig "$@"\nfi' > /bin/uname
-RUN chmod 755 /bin/uname
-
 RUN \
         curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
         echo 'deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' > /etc/apt/sources.list.d/google.list && \

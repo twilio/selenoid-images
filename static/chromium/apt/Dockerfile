@@ -10,8 +10,11 @@ RUN \
     apt-get -y --no-install-recommends install \
       iproute2 \
       iptables \
+      lsof \
+      python3-pip \
       libgtk-3-0 \
       ${PACKAGE}=${VERSION} \
       chromium-chromedriver=${VERSION} && \
+    pip3 install --default-timeout=300 tcconfig && \
     chromium-browser --version && \
     rm -Rf /tmp/* && rm -Rf /var/lib/apt/lists/*
