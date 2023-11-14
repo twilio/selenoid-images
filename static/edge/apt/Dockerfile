@@ -12,7 +12,8 @@ RUN \
         curl -fSsL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /usr/share/keyrings/microsoft-edge.gpg > /dev/null && \
         echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-edge.gpg] https://packages.microsoft.com/repos/edge stable main' | tee /etc/apt/sources.list.d/microsoft-edge.list && \
         apt-get update && \
-        apt-get -y --no-install-recommends install iproute2 iptables $PACKAGE=$VERSION && \
+        apt-get -y --no-install-recommends install iproute2 iptables lsof python3-pip $PACKAGE=$VERSION && \
+        pip3 install --default-timeout=300 tcconfig && \
         (  \
           sed -i -e 's@exec -a "$0" "$HERE/msedge"@& --no-sandbox --disable-gpu@' /opt/microsoft/$INSTALL_DIR/$PACKAGE || \
           sed -i -e 's@exec -a "$0" "$HERE/msedge"@& --no-sandbox --disable-gpu@' /opt/microsoft/$INSTALL_DIR/microsoft-edge \

@@ -14,7 +14,8 @@ RUN  \
             add-apt-repository -y $PPA \
         ) || true && \
         apt-get update && \
-        apt-get -y --no-install-recommends install iproute2 iptables libavcodec58 $PACKAGE=$VERSION && \
+        apt-get -y --no-install-recommends install iproute2 iptables lsof python3-pip libavcodec58 $PACKAGE=$VERSION && \
+        pip3 install --default-timeout=300 tcconfig && \
         ( [ "$PACKAGE" != "firefox" ] && ln /usr/bin/$PACKAGE /usr/bin/firefox ) || true && \
         firefox --version && \
         rm -Rf /tmp/* && rm -Rf /var/lib/apt/lists/*

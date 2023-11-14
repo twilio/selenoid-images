@@ -48,8 +48,6 @@ RUN \
          lsb-base \
          xdg-utils \
          libcurl4 \
-         iproute2 \
-         iptables \
          curl && \
          curl -O http://host.docker.internal:8080/google-chrome.deb && \
          apt-get -y purge curl && \
