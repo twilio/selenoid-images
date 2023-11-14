@@ -23,9 +23,10 @@ RUN \
     chmod +x /usr/bin/chromedriver && \
     chown -R selenium:nogroup /etc/opt/chrome/policies/managed/
 
-#Use root user
+# Use root user: allows running network manipulation commands (tc)
 USER root
 
+# Bug ticket: https://bugs.launchpad.net/ubuntu/+source/glibc/+bug/1962225
 RUN mv /bin/uname /bin/uname.orig
 RUN printf '#!/bin/bash\n\nif [[ "$1" == "-r" ]] ;then\n echo '4.9.250'\n exit\nelse\n uname.orig "$@"\nfi' > /bin/uname
 RUN chmod 755 /bin/uname
