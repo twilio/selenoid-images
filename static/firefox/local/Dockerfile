@@ -13,6 +13,13 @@ RUN \
                 apt-get update && \
                 apt-get -y --no-install-recommends install libavcodec58 iproute2 iptables lsof python3-pip && \
                 pip3 install --default-timeout=300 tcconfig && \
+                # Workaround for tcset command (https://github.com/thombashi/tcconfig/issues/177)
+                pip3 uninstall -y SimpleSQLite==1.5.1 && \
+                pip3 install SimpleSQLite==1.4.0 && \
+                # Check network utilities version
+                ip -V && \
+                iptables -V && \
+                tcset -V && \
                 apt-get -y install libgtk-3-0 libstartup-notification0 libdbus-glib-1-2 \
             ) || \
             ( \
@@ -21,6 +28,13 @@ RUN \
                 apt-get update && \
                 apt-get -y --no-install-recommends install libavcodec58 iproute2 iptables lsof python3-pip && \
                 pip3 install --default-timeout=300 tcconfig && \
+                # Workaround for tcset command (https://github.com/thombashi/tcconfig/issues/177)
+                pip3 uninstall -y SimpleSQLite==1.5.1 && \
+                pip3 install SimpleSQLite==1.4.0 && \
+                # Check network utilities version
+                ip -V && \
+                iptables -V && \
+                tcset -V && \
                 apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386 libgtk-3-0:i386 libasound2:i386 libdbus-glib-1-2:i386 libxt6:i386 libatomic1:i386 libcairo-gobject2:i386 libstartup-notification0:i386 libx11-xcb1:i386 && \
                 mkdir flashplayer && \
                 cd flashplayer && \

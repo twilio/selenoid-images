@@ -14,6 +14,13 @@ RUN \
         apt-get update && \
         apt-get -y --no-install-recommends install iproute2 iptables lsof python3-pip $PACKAGE=$VERSION && \
         pip3 install --default-timeout=300 tcconfig && \
+        # Workaround for tcset command (https://github.com/thombashi/tcconfig/issues/177)
+        pip3 uninstall -y SimpleSQLite==1.5.1 && \
+        pip3 install SimpleSQLite==1.4.0 && \
+        # Check network utilities version
+        ip -V && \
+        iptables -V && \
+        tcset -V && \
         (  \
           sed -i -e 's@exec -a "$0" "$HERE/msedge"@& --no-sandbox --disable-gpu@' /opt/microsoft/$INSTALL_DIR/$PACKAGE || \
           sed -i -e 's@exec -a "$0" "$HERE/msedge"@& --no-sandbox --disable-gpu@' /opt/microsoft/$INSTALL_DIR/microsoft-edge \
