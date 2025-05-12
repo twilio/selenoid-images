@@ -2,7 +2,6 @@ FROM browsers/base:7.3.6
 
 ARG VERSION=noop
 ARG PACKAGE=firefox
-ARG PPA=noop
 
 LABEL browser=$PACKAGE:$VERSION
 

@@ -144,13 +144,13 @@ func (c *Firefox) Build() error {
 func (c *Firefox) channelToBuildArgs() []string {
 	switch c.BrowserChannel {
 	case "beta":
-		return []string{"PPA=ppa:mozillateam/firefox-next"}
+		return []string{"PACKAGE=firefox-beta"}
 	case "dev":
-		return []string{"PACKAGE=firefox-trunk", "PPA=ppa:ubuntu-mozilla-daily/ppa"}
+		return []string{"PACKAGE=firefox-nightly"}
 	case "esr":
-		return []string{"PACKAGE=firefox-esr", "PPA=ppa:mozillateam/ppa"}
+		return []string{"PACKAGE=firefox-esr"}
 	default:
-		return []string{"PPA=ppa:mozillateam/ppa"}
+		return []string{}
 	}
 }
 
