@@ -2,17 +2,17 @@ FROM browsers/base:7.3.6
 
 ARG VERSION
 ARG PACKAGE=firefox
-ARG PPA
 
 LABEL browser=$PACKAGE:$VERSION
 
 RUN  \
-        ( [ "$PPA" != "" ] && \
-            apt-get update && \
-            apt-get install -y software-properties-common && \
-            apt-get update && \
-            add-apt-repository -y $PPA \
-        ) || true && \
+        apt-get update && \
+        apt-get install -y software-properties-common wget && \
+        # https://support.mozilla.org/en-US/kb/install-firefox-linux#w_install-firefox-deb-package-for-debian-based-distributions-recommended
+        install -d -m 0755 /etc/apt/keyrings && \
+        wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null && \
+        echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null && \
+        printf 'Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\n' | tee /etc/apt/preferences.d/mozilla && \
         apt-get update && \
         apt-get -y --no-install-recommends install iproute2 iptables lsof python3-pip libavcodec58 $PACKAGE=$VERSION && \
         pip3 install --default-timeout=300 tcconfig && \
