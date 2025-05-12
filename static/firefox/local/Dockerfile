@@ -1,4 +1,4 @@
-FROM browsers/base:7.3.6
+FROM browsers/base:7.4.2
 
 ARG VERSION=noop
 ARG PACKAGE=firefox
@@ -12,9 +12,6 @@ RUN \
                 apt-get update && \
                 apt-get -y --no-install-recommends install libavcodec58 iproute2 iptables lsof python3-pip && \
                 pip3 install --default-timeout=300 tcconfig && \
-                # Workaround for tcset command (https://github.com/thombashi/tcconfig/issues/177)
-                pip3 uninstall -y SimpleSQLite==1.5.1 && \
-                pip3 install SimpleSQLite==1.4.0 && \
                 # Check network utilities version
                 ip -V && \
                 iptables -V && \
@@ -27,9 +24,6 @@ RUN \
                 apt-get update && \
                 apt-get -y --no-install-recommends install libavcodec58 iproute2 iptables lsof python3-pip && \
                 pip3 install --default-timeout=300 tcconfig && \
-                # Workaround for tcset command (https://github.com/thombashi/tcconfig/issues/177)
-                pip3 uninstall -y SimpleSQLite==1.5.1 && \
-                pip3 install SimpleSQLite==1.4.0 && \
                 # Check network utilities version
                 ip -V && \
                 iptables -V && \
