@@ -7,6 +7,8 @@ ARG INSTALL_DIR=msedge
 LABEL browser=$PACKAGE:$VERSION
 
 RUN \
+        curl -s https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+        echo 'deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main' > /etc/apt/sources.list.d/google.list && \
         apt-get update && \
         apt-get -y --no-install-recommends install software-properties-common apt-transport-https curl ca-certificates && \
         curl -fSsL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /usr/share/keyrings/microsoft-edge.gpg > /dev/null && \
