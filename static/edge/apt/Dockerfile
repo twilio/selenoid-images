@@ -13,7 +13,7 @@ RUN \
         echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-edge.gpg] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge.list && \
         apt-get update && \
         apt-get -y --no-install-recommends install $PACKAGE=$VERSION || true && \
-        sed -i 's/install_deb822_sources/#install_deb822_sources/' /var/lib/dpkg/info/microsoft-edge-dev.postinst && \
+        sed -i 's/install_deb822_sources/#install_deb822_sources/' /var/lib/dpkg/info/$PACKAGE.postinst && \
         dpkg --configure -a && \
         pip3 install --default-timeout=300 tcconfig && \
         # Check network utilities version
