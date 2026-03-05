@@ -8,7 +8,7 @@ LABEL browser=$PACKAGE:$VERSION
 
 RUN \
         apt-get update && \
-        apt-get -y --no-install-recommends install software-properties-common apt-transport-https curl ca-certificates gnupg iproute2 iptables lsof python3-pip && \
+        apt-get -y --no-install-recommends install software-properties-common apt-transport-https curl ca-certificates gnupg iproute2 iptables lsof && \
         curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-edge.gpg && \
         echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-edge.gpg] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge.list && \
         apt-get update && \
@@ -19,7 +19,6 @@ RUN \
         # Check network utilities version
         ip -V && \
         iptables -V && \
-        tcset -V && \
         (  \
           sed -i -e 's@exec -a "$0" "$HERE/msedge"@& --no-sandbox --disable-gpu@' /opt/microsoft/$INSTALL_DIR/$PACKAGE || \
           sed -i -e 's@exec -a "$0" "$HERE/msedge"@& --no-sandbox --disable-gpu@' /opt/microsoft/$INSTALL_DIR/microsoft-edge \

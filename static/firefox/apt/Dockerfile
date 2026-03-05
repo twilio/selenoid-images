@@ -14,12 +14,11 @@ RUN  \
         echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null && \
         printf 'Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\n' | tee /etc/apt/preferences.d/mozilla && \
         apt-get update && \
-        apt-get -y --no-install-recommends install iproute2 iptables lsof python3-pip libavcodec58 $PACKAGE=$VERSION && \
+        apt-get -y --no-install-recommends install iproute2 iptables lsof libavcodec58 $PACKAGE=$VERSION && \
         pip3 install --default-timeout=300 tcconfig && \
         # Check network utilities version
         ip -V && \
         iptables -V && \
-        tcset -V && \
         ( [ "$PACKAGE" != "firefox" ] && ln /usr/bin/$PACKAGE /usr/bin/firefox ) || true && \
         firefox --version && \
         rm -Rf /tmp/* && rm -Rf /var/lib/apt/lists/*
