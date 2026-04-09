@@ -113,7 +113,7 @@ func (c *Edge) channelToBuildArgs() []string {
 func (c *Edge) downloadMSEdgeDriver(dir string) (string, error) {
 	version := c.DriverVersion
 	// Full driver versions list can be fetched as XML from https://msedgedriver.azureedge.net/
-	u := fmt.Sprintf("https://msedgewebdriverstorage.blob.core.windows.net/edgewebdriver/%s/edgedriver_linux64.zip", version)
+	u := fmt.Sprintf("https://msedgedriver.microsoft.com/%s/edgedriver_linux64.zip", version)
 	_, err := downloadDriver(u, msedgeDriverBinary, dir)
 	if err != nil {
 		return "", fmt.Errorf("download msedgedriver: %v", err)
